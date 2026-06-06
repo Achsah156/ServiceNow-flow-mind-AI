@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" audit="true" db_object_id="c76890108e494a0aa2243fce1a958af6" label="FM Task" name="x_2063628_flowmi_0_fm_task" type="collection">
+        <element label="Due Date" max_length="40" name="due_date" type="glide_date_time"/>
+        <element display="true" label="Title" mandatory="true" max_length="200" name="title" type="string"/>
+        <element label="Completed Date" max_length="40" name="completed_date" type="glide_date_time"/>
+        <element label="Assigned To" mandatory="true" max_length="32" name="assigned_to" reference="sys_user" type="reference"/>
+        <element label="AI Summary" max_length="500" name="ai_summary" read_only="true" read_only_option="instance_configured" type="string"/>
+        <element label="Notes" max_length="2000" name="notes" type="string"/>
+        <element default="0" label="Actual Hours" max_length="40" name="actual_hours" type="integer"/>
+        <element choice="3" default="medium" label="Priority" max_length="40" name="priority" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Low" sequence="3" value="low"/>
+                <element inactive_on_update="false" label="High" sequence="1" value="high"/>
+                <element inactive_on_update="false" label="Medium" sequence="2" value="medium"/>
+                <element inactive_on_update="false" label="Critical" sequence="0" value="critical"/>
+            </choice>
+        </element>
+        <element label="Description" max_length="1000" name="description" type="string"/>
+        <element choice="1" default="other" label="Category" max_length="40" name="category" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Documentation" sequence="3" value="documentation"/>
+                <element inactive_on_update="false" label="Meeting" sequence="4" value="meeting"/>
+                <element inactive_on_update="false" label="Development" sequence="0" value="development"/>
+                <element inactive_on_update="false" label="Design" sequence="1" value="design"/>
+                <element inactive_on_update="false" label="Testing" sequence="2" value="testing"/>
+                <element inactive_on_update="false" label="Other" sequence="5" value="other"/>
+            </choice>
+        </element>
+        <element default="10" label="XP Reward" max_length="40" name="xp_reward" type="integer"/>
+        <element default="1" label="Estimated Hours" max_length="40" name="estimated_hours" type="integer"/>
+        <element choice="3" default="open" label="Status" max_length="40" name="status" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Cancelled" sequence="4" value="cancelled"/>
+                <element inactive_on_update="false" label="In Progress" sequence="1" value="in_progress"/>
+                <element inactive_on_update="false" label="On Hold" sequence="2" value="on_hold"/>
+                <element inactive_on_update="false" label="Open" sequence="0" value="open"/>
+                <element inactive_on_update="false" label="Completed" sequence="3" value="completed"/>
+            </choice>
+        </element>
+        <element label="Created By" max_length="32" name="created_by" reference="sys_user" type="reference"/>
+        <index name="index">
+            <element name="assigned_to"/>
+        </index>
+        <index name="index2">
+            <element name="created_by"/>
+        </index>
+    </element>
+</database>

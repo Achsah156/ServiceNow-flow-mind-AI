@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="9b230b53b0bd46aca5603151f4d4cafa" label="FM Achievement" name="x_2063628_flowmi_0_fm_achievement" type="collection">
+        <element default="0" label="Criteria Value" max_length="40" name="criteria_value" type="integer"/>
+        <element display="true" label="Name" mandatory="true" max_length="100" name="name" type="string"/>
+        <element choice="1" default="milestone" label="Category" max_length="40" name="category" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Collaboration" sequence="1" value="collaboration"/>
+                <element inactive_on_update="false" label="Productivity" sequence="0" value="productivity"/>
+                <element inactive_on_update="false" label="Learning" sequence="2" value="learning"/>
+                <element inactive_on_update="false" label="Special" sequence="4" value="special"/>
+                <element inactive_on_update="false" label="Milestone" sequence="3" value="milestone"/>
+            </choice>
+        </element>
+        <element default="50" label="XP Value" max_length="40" name="xp_value" type="integer"/>
+        <element default="true" label="Is Active" max_length="40" name="is_active" type="boolean"/>
+        <element label="Description" max_length="500" name="description" type="string"/>
+        <element label="Badge Icon" max_length="100" name="badge_icon" type="string"/>
+        <element choice="3" default="manual" label="Criteria Type" max_length="40" name="criteria_type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Task Count" sequence="0" value="task_count"/>
+                <element inactive_on_update="false" label="Manual" sequence="3" value="manual"/>
+                <element inactive_on_update="false" label="Streak Days" sequence="2" value="streak_days"/>
+                <element inactive_on_update="false" label="XP Threshold" sequence="1" value="xp_threshold"/>
+            </choice>
+        </element>
+    </element>
+</database>

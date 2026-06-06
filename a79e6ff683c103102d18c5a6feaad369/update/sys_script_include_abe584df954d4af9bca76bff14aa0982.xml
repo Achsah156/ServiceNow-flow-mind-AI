@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_2063628_flowmi_0.FMAchievementChecker</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description>Achievement evaluation logic for the FlowMind gamification engine. Checks user stats against achievement criteria and auto-awards earned achievements.</description>
+        <mobile_callable>false</mobile_callable>
+        <name>FMAchievementChecker</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var FMAchievementChecker = Class.create();
+FMAchievementChecker.prototype = {
+    initialize: function() {},
+
+    /**
+     * Evaluates all active achievements against user's stats and auto-awards earned ones.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     */
+    checkAchievements: function(userProfileSysId) {
+        var achievementGr = new GlideRecord('x_2063628_flowmi_0_fm_achievement');
+        achievementGr.addQuery('is_active', true);
+        achievementGr.query();
+
+        while (achievementGr.next()) {
+            var achievementSysId = achievementGr.getUniqueValue();
+
+            // Skip if user already has this achievement
+            if (this.hasEarnedAchievement(userProfileSysId, achievementSysId)) {
+                continue;
+            }
+
+            var criteriaType = achievementGr.getValue('criteria_type');
+            var criteriaValue = parseInt(achievementGr.getValue('criteria_value')) || 0;
+            var earned = false;
+
+            switch (criteriaType) {
+                case 'tasks_completed':
+                    var completedCount = this.getCompletedTaskCount(userProfileSysId);
+                    if (completedCount >= criteriaValue) {
+                        earned = true;
+                    }
+                    break;
+                case 'xp_earned':
+                    var profile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+                    if (profile.get(userProfileSysId)) {
+                        var totalXP = parseInt(profile.getValue('total_xp')) || 0;
+                        if (totalXP >= criteriaValue) {
+                            earned = true;
+                        }
+                    }
+                    break;
+                case 'streak_days':
+                    var profileStreak = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+                    if (profileStreak.get(userProfileSysId)) {
+                        var streak = parseInt(profileStreak.getValue('streak_count')) || 0;
+                        if (streak >= criteriaValue) {
+                            earned = true;
+                        }
+                    }
+                    break;
+                case 'level_reached':
+                    var profileLevel = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+                    if (profileLevel.get(userProfileSysId)) {
+                        var level = parseInt(profileLevel.getValue('current_level')) || 0;
+                        if (level >= criteriaValue) {
+                            earned = true;
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            if (earned) {
+                this.awardAchievement(userProfileSysId, achievementSysId);
+            }
+        }
+    },
+
+    /**
+     * Creates a user_achievement record and awards XP from the achievement.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     * @param {string} achievementSysId - sys_id of the achievement
+     */
+    awardAchievement: function(userProfileSysId, achievementSysId) {
+        // Create user_achievement record
+        var userAch = new GlideRecord('x_2063628_flowmi_0_fm_user_achievement');
+        userAch.initialize();
+        userAch.setValue('user_profile', userProfileSysId);
+        userAch.setValue('achievement', achievementSysId);
+        userAch.setValue('earned_date', new GlideDateTime().toString());
+        userAch.setValue('awarded_by', 'system');
+        userAch.insert();
+
+        // Award XP from the achievement
+        var achievement = new GlideRecord('x_2063628_flowmi_0_fm_achievement');
+        if (achievement.get(achievementSysId)) {
+            var xpValue = parseInt(achievement.getValue('xp_value')) || 0;
+            if (xpValue > 0) {
+                // Create XP log for achievement
+                var xpLog = new GlideRecord('x_2063628_flowmi_0_fm_xp_log');
+                xpLog.initialize();
+                xpLog.setValue('user_profile', userProfileSysId);
+                xpLog.setValue('xp_amount', xpValue);
+                xpLog.setValue('source_type', 'achievement');
+                xpLog.setValue('source_achievement', achievementSysId);
+                xpLog.setValue('description', 'Achievement earned: ' + achievement.getValue('name'));
+                xpLog.setValue('awarded_date', new GlideDateTime().toString());
+                xpLog.insert();
+
+                // Update profile total_xp
+                var profile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+                if (profile.get(userProfileSysId)) {
+                    var currentXP = parseInt(profile.getValue('total_xp')) || 0;
+                    profile.setValue('total_xp', currentXP + xpValue);
+                    profile.update();
+                }
+            }
+        }
+    },
+
+    /**
+     * Checks if a user already has a specific achievement.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     * @param {string} achievementSysId - sys_id of the achievement
+     * @returns {boolean} true if user already has the achievement
+     */
+    hasEarnedAchievement: function(userProfileSysId, achievementSysId) {
+        var userAch = new GlideRecord('x_2063628_flowmi_0_fm_user_achievement');
+        userAch.addQuery('user_profile', userProfileSysId);
+        userAch.addQuery('achievement', achievementSysId);
+        userAch.query();
+        return userAch.hasNext();
+    },
+
+    /**
+     * Returns the number of completed tasks for a user profile.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     * @returns {number} count of completed tasks
+     */
+    getCompletedTaskCount: function(userProfileSysId) {
+        var taskGr = new GlideRecord('x_2063628_flowmi_0_fm_task');
+        taskGr.addQuery('assigned_to', userProfileSysId);
+        taskGr.addQuery('status', 'completed');
+        taskGr.query();
+        return taskGr.getRowCount();
+    },
+
+    type: 'FMAchievementChecker'
+};
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:02</sys_created_on>
+        <sys_id>abe584df954d4af9bca76bff14aa0982</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>FMAchievementChecker</sys_name>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>sys_script_include_abe584df954d4af9bca76bff14aa0982</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:02</sys_updated_on>
+    </sys_script_include>
+</record_update>

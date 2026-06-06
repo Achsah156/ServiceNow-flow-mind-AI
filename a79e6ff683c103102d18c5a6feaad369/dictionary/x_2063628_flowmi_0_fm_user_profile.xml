@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="34143fb2830503102d18c5a6feaad3da" label="FM User Profile" max_length="40" name="x_2063628_flowmi_0_fm_user_profile" type="collection">
+        <element label="Last Active" max_length="40" name="last_active" type="glide_date_time"/>
+        <element default="0" label="Productivity Score" max_length="40" name="productivity_score" type="integer"/>
+        <element default="1" label="Current Level" max_length="40" name="current_level" type="integer"/>
+        <element label="User" mandatory="true" max_length="32" name="user" reference="sys_user" type="reference"/>
+        <element choice="1" default="active" label="Status" max_length="40" name="status" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Active" sequence="0" value="active"/>
+                <element inactive_on_update="false" label="Inactive" sequence="1" value="inactive"/>
+                <element inactive_on_update="false" label="On Leave" sequence="2" value="on_leave"/>
+            </choice>
+        </element>
+        <element default="0" label="Total XP" max_length="40" name="total_xp" type="integer"/>
+        <element label="Bio" max_length="500" name="bio" type="string"/>
+        <element default="0" label="Streak Count" max_length="40" name="streak_count" type="integer"/>
+        <element label="Display Name" mandatory="true" max_length="100" name="display_name" type="string"/>
+        <index name="index">
+            <element name="user"/>
+        </index>
+    </element>
+</database>

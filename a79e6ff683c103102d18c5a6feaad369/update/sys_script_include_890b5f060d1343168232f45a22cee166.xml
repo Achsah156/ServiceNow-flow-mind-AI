@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>x_2063628_flowmi_0.FMXPCalculator</api_name>
+        <caller_access/>
+        <client_callable>true</client_callable>
+        <description>XP calculation and awarding logic for the FlowMind gamification engine. Handles XP awards, level calculations, and priority-based multipliers.</description>
+        <mobile_callable>false</mobile_callable>
+        <name>FMXPCalculator</name>
+        <sandbox_callable>false</sandbox_callable>
+        <script><![CDATA[var FMXPCalculator = Class.create();
+FMXPCalculator.prototype = {
+    initialize: function() {},
+
+    /**
+     * Awards XP to a user profile, creates an XP log record, and updates their total XP.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     * @param {number} xpAmount - amount of XP to award
+     * @param {string} sourceType - type of source (e.g., 'task_completion', 'achievement', 'streak_bonus')
+     * @param {string} sourceTaskSysId - sys_id of the source task (can be empty)
+     * @param {string} description - description of the XP award
+     */
+    awardXP: function(userProfileSysId, xpAmount, sourceType, sourceTaskSysId, description) {
+        // Create XP log record
+        var xpLog = new GlideRecord('x_2063628_flowmi_0_fm_xp_log');
+        xpLog.initialize();
+        xpLog.setValue('user_profile', userProfileSysId);
+        xpLog.setValue('xp_amount', xpAmount);
+        xpLog.setValue('source_type', sourceType);
+        if (sourceTaskSysId) {
+            xpLog.setValue('source_task', sourceTaskSysId);
+        }
+        xpLog.setValue('description', description);
+        xpLog.setValue('awarded_date', new GlideDateTime().toString());
+        xpLog.insert();
+
+        // Update user profile total_xp
+        var profile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+        if (profile.get(userProfileSysId)) {
+            var currentXP = parseInt(profile.getValue('total_xp')) || 0;
+            var newTotalXP = currentXP + xpAmount;
+            profile.setValue('total_xp', newTotalXP);
+            profile.update();
+
+            // Update user level after XP change
+            this.updateUserLevel(userProfileSysId);
+        }
+    },
+
+    /**
+     * Calculates the level number based on total XP.
+     * Levels 1-10: 100 XP per level (0-1000)
+     * Levels 11-20: 200 XP per level (1000-3000)
+     * Levels 21+: 500 XP per level (3000+)
+     * @param {number} totalXP - total XP amount
+     * @returns {number} level number
+     */
+    calculateLevelFromXP: function(totalXP) {
+        if (totalXP <= 0) {
+            return 1;
+        }
+
+        // Levels 1-10: 100 XP per level (0-1000 XP)
+        if (totalXP <= 1000) {
+            return Math.floor(totalXP / 100) + 1;
+        }
+
+        // Levels 11-20: 200 XP per level (1000-3000 XP)
+        var remainingAfterLevel10 = totalXP - 1000;
+        if (remainingAfterLevel10 <= 2000) {
+            return 10 + Math.floor(remainingAfterLevel10 / 200) + 1;
+        }
+
+        // Levels 21+: 500 XP per level (3000+ XP)
+        var remainingAfterLevel20 = totalXP - 3000;
+        return 20 + Math.floor(remainingAfterLevel20 / 500) + 1;
+    },
+
+    /**
+     * Recalculates and updates a user's current_level based on their total_xp.
+     * @param {string} userProfileSysId - sys_id of the user profile
+     */
+    updateUserLevel: function(userProfileSysId) {
+        var profile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+        if (profile.get(userProfileSysId)) {
+            var totalXP = parseInt(profile.getValue('total_xp')) || 0;
+            var newLevel = this.calculateLevelFromXP(totalXP);
+            profile.setValue('current_level', newLevel);
+            profile.update();
+        }
+    },
+
+    /**
+     * Returns XP multiplier based on task priority.
+     * @param {string} priority - task priority value
+     * @returns {number} XP multiplier
+     */
+    getXPForPriority: function(priority) {
+        switch (String(priority)) {
+            case 'critical':
+                return 2.0;
+            case 'high':
+                return 1.5;
+            case 'medium':
+                return 1.0;
+            case 'low':
+                return 0.5;
+            default:
+                return 1.0;
+        }
+    },
+
+    type: 'FMXPCalculator'
+};
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:02</sys_created_on>
+        <sys_id>890b5f060d1343168232f45a22cee166</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>FMXPCalculator</sys_name>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>sys_script_include_890b5f060d1343168232f45a22cee166</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:02</sys_updated_on>
+    </sys_script_include>
+</record_update>

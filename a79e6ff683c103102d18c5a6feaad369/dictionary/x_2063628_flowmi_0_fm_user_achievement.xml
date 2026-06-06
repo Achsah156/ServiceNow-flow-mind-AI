@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="f077871024a04bdd9efcbb7e6d6be452" label="FM User Achievement" name="x_2063628_flowmi_0_fm_user_achievement" type="collection">
+        <element display="true" label="Achievement" mandatory="true" max_length="32" name="achievement" reference="x_2063628_flowmi_0_fm_achievement" type="reference"/>
+        <element label="Awarded By" max_length="32" name="awarded_by" reference="sys_user" type="reference"/>
+        <element label="Earned Date" max_length="40" name="earned_date" type="glide_date_time"/>
+        <element label="User Profile" mandatory="true" max_length="32" name="user_profile" reference="x_2063628_flowmi_0_fm_user_profile" type="reference"/>
+        <index name="index">
+            <element name="achievement"/>
+        </index>
+        <index name="index2">
+            <element name="awarded_by"/>
+        </index>
+        <index name="index3">
+            <element name="user_profile"/>
+        </index>
+    </element>
+</database>

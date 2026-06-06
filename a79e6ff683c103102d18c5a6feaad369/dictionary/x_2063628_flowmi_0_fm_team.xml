@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="38dc1a25e6bf46d5a153713c9e58f380" label="FM Team" name="x_2063628_flowmi_0_fm_team" type="collection">
+        <element default="0" label="Total XP" max_length="40" name="total_xp" type="integer"/>
+        <element label="Department" max_length="100" name="department" type="string"/>
+        <element display="true" label="Name" mandatory="true" max_length="100" name="name" type="string"/>
+        <element default="true" label="Is Active" max_length="40" name="is_active" type="boolean"/>
+        <element default="0" label="Member Count" max_length="40" name="member_count" type="integer"/>
+        <element label="Description" max_length="500" name="description" type="string"/>
+        <element label="Team Lead" mandatory="true" max_length="32" name="team_lead" reference="sys_user" type="reference"/>
+        <index name="index">
+            <element name="team_lead"/>
+        </index>
+    </element>
+</database>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="INSERT_OR_UPDATE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:04</sys_created_on>
+        <sys_id>f1d60ac99a7146ae864475221636dd04</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_2063628_flowmi_0_fm_achievement.</sys_name>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_security_acl display_value="x_2063628_flowmi_0_fm_achievement">36421b7bb26647d1851c42ae252934f8</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_f1d60ac99a7146ae864475221636dd04</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:04</sys_updated_on>
+        <sys_user_role display_value="x_2063628_flowmi_0.manager" name="x_2063628_flowmi_0.manager">37d63e263de24f7d98a3a61b68105437</sys_user_role>
+    </sys_security_acl_role>
+</record_update>

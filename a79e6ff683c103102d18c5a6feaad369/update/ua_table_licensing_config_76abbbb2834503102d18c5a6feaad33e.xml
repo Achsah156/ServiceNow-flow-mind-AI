@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="ua_table_licensing_config">
+    <ua_table_licensing_config action="INSERT_OR_UPDATE">
+        <is_fulfillment>false</is_fulfillment>
+        <license_condition/>
+        <license_model>none</license_model>
+        <license_roles/>
+        <name>x_2063628_flowmi_0_fm_team</name>
+        <op_delete>true</op_delete>
+        <op_insert>true</op_insert>
+        <op_update>true</op_update>
+        <owner_condition/>
+        <sys_class_name>ua_table_licensing_config</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:37:57</sys_created_on>
+        <sys_id>76abbbb2834503102d18c5a6feaad33e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_2063628_flowmi_0_fm_team</sys_name>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>ua_table_licensing_config_76abbbb2834503102d18c5a6feaad33e</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:37:57</sys_updated_on>
+    </ua_table_licensing_config>
+</record_update>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="47cfc5cf02d440fd9d31bbad4ded9c2c" label="FM XP Log" name="x_2063628_flowmi_0_fm_xp_log" type="collection">
+        <element display="true" label="Description" max_length="500" name="description" type="string"/>
+        <element label="Source Achievement" max_length="32" name="source_achievement" reference="x_2063628_flowmi_0_fm_achievement" type="reference"/>
+        <element choice="3" default="task_completion" label="Source Type" max_length="40" name="source_type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Manual" sequence="4" value="manual"/>
+                <element inactive_on_update="false" label="Task Completion" sequence="0" value="task_completion"/>
+                <element inactive_on_update="false" label="Bonus" sequence="2" value="bonus"/>
+                <element inactive_on_update="false" label="Achievement" sequence="1" value="achievement"/>
+                <element inactive_on_update="false" label="Streak" sequence="3" value="streak"/>
+            </choice>
+        </element>
+        <element label="Source Task" max_length="32" name="source_task" reference="x_2063628_flowmi_0_fm_task" type="reference"/>
+        <element label="Awarded Date" max_length="40" name="awarded_date" type="glide_date_time"/>
+        <element label="XP Amount" mandatory="true" max_length="40" name="xp_amount" type="integer"/>
+        <element label="User Profile" mandatory="true" max_length="32" name="user_profile" reference="x_2063628_flowmi_0_fm_user_profile" type="reference"/>
+        <index name="index">
+            <element name="source_achievement"/>
+        </index>
+        <index name="index2">
+            <element name="source_task"/>
+        </index>
+        <index name="index3">
+            <element name="user_profile"/>
+        </index>
+    </element>
+</database>

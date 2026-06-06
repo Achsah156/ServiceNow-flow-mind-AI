@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_2063628_flowmi_0_fm_task</collection>
+        <condition>current.getValue('status') == 'completed' &amp;&amp; previous.getValue('status') != 'completed'</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Award XP on Task Completion</name>
+        <order>100</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[// Business Rule: Award XP on Task Completion
+// Globals available: current, previous, gs, GlideRecord, GlideDateTime
+(function executeRule(current, previous) {
+    // Get the assigned_to user's profile
+    var userProfileSysId = current.getValue('assigned_to');
+    if (!userProfileSysId) {
+        return;
+    }
+
+    // Get the task's XP reward and priority
+    var baseXP = parseInt(current.getValue('xp_reward')) || 10;
+    var priority = current.getValue('priority');
+
+    // Calculate XP multiplier based on priority
+    var priorityMultiplier = 1.0;
+    switch (String(priority)) {
+        case 'critical':
+            priorityMultiplier = 2.0;
+            break;
+        case 'high':
+            priorityMultiplier = 1.5;
+            break;
+        case 'medium':
+            priorityMultiplier = 1.0;
+            break;
+        case 'low':
+            priorityMultiplier = 0.5;
+            break;
+    }
+
+    // Get streak bonus from profile
+    var profile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+    if (!profile.get(userProfileSysId)) {
+        return;
+    }
+
+    var streakCount = parseInt(profile.getValue('streak_count')) || 0;
+    var streakBonus = 0;
+    if (streakCount >= 30) {
+        streakBonus = 50;
+    } else if (streakCount >= 14) {
+        streakBonus = 20;
+    } else if (streakCount >= 7) {
+        streakBonus = 10;
+    } else if (streakCount >= 3) {
+        streakBonus = 5;
+    }
+
+    // Calculate total XP
+    var totalXPAwarded = Math.floor(baseXP * priorityMultiplier) + streakBonus;
+
+    // Create XP log record
+    var xpLog = new GlideRecord('x_2063628_flowmi_0_fm_xp_log');
+    xpLog.initialize();
+    xpLog.setValue('user_profile', userProfileSysId);
+    xpLog.setValue('xp_amount', totalXPAwarded);
+    xpLog.setValue('source_type', 'task_completion');
+    xpLog.setValue('source_task', current.getUniqueValue());
+    xpLog.setValue('description', 'Task completed: ' + current.getValue('title'));
+    xpLog.setValue('awarded_date', new GlideDateTime().toString());
+    xpLog.insert();
+
+    // Update user profile total_xp
+    var currentXP = parseInt(profile.getValue('total_xp')) || 0;
+    var newTotalXP = currentXP + totalXPAwarded;
+    profile.setValue('total_xp', newTotalXP);
+    profile.update();
+
+    // Update streak count
+    profile.get(userProfileSysId);
+    var currentStreakCount = parseInt(profile.getValue('streak_count')) || 0;
+    profile.setValue('streak_count', currentStreakCount + 1);
+    profile.update();
+
+    // Set completed_date to now
+    current.setValue('completed_date', new GlideDateTime().toString());
+    current.update();
+
+    // Update user level
+    profile.get(userProfileSysId);
+    var updatedTotalXP = parseInt(profile.getValue('total_xp')) || 0;
+    var newLevel = 1;
+    if (updatedTotalXP <= 0) {
+        newLevel = 1;
+    } else if (updatedTotalXP <= 1000) {
+        newLevel = Math.floor(updatedTotalXP / 100) + 1;
+    } else if (updatedTotalXP <= 3000) {
+        newLevel = 10 + Math.floor((updatedTotalXP - 1000) / 200) + 1;
+    } else {
+        newLevel = 20 + Math.floor((updatedTotalXP - 3000) / 500) + 1;
+    }
+    profile.setValue('current_level', newLevel);
+    profile.update();
+
+    // Check achievements
+    var achievementGr = new GlideRecord('x_2063628_flowmi_0_fm_achievement');
+    achievementGr.addQuery('is_active', true);
+    achievementGr.query();
+
+    while (achievementGr.next()) {
+        var achievementSysId = achievementGr.getUniqueValue();
+
+        // Check if user already has this achievement
+        var userAch = new GlideRecord('x_2063628_flowmi_0_fm_user_achievement');
+        userAch.addQuery('user_profile', userProfileSysId);
+        userAch.addQuery('achievement', achievementSysId);
+        userAch.query();
+        if (userAch.hasNext()) {
+            continue;
+        }
+
+        var criteriaType = achievementGr.getValue('criteria_type');
+        var criteriaValue = parseInt(achievementGr.getValue('criteria_value')) || 0;
+        var earned = false;
+
+        switch (criteriaType) {
+            case 'tasks_completed':
+                var taskCount = new GlideRecord('x_2063628_flowmi_0_fm_task');
+                taskCount.addQuery('assigned_to', userProfileSysId);
+                taskCount.addQuery('status', 'completed');
+                taskCount.query();
+                if (taskCount.getRowCount() >= criteriaValue) {
+                    earned = true;
+                }
+                break;
+            case 'xp_earned':
+                if (newTotalXP >= criteriaValue) {
+                    earned = true;
+                }
+                break;
+            case 'streak_days':
+                if ((currentStreakCount + 1) >= criteriaValue) {
+                    earned = true;
+                }
+                break;
+            case 'level_reached':
+                if (newLevel >= criteriaValue) {
+                    earned = true;
+                }
+                break;
+        }
+
+        if (earned) {
+            var newUserAch = new GlideRecord('x_2063628_flowmi_0_fm_user_achievement');
+            newUserAch.initialize();
+            newUserAch.setValue('user_profile', userProfileSysId);
+            newUserAch.setValue('achievement', achievementSysId);
+            newUserAch.setValue('earned_date', new GlideDateTime().toString());
+            newUserAch.setValue('awarded_by', 'system');
+            newUserAch.insert();
+
+            // Award achievement XP
+            var achXP = parseInt(achievementGr.getValue('xp_value')) || 0;
+            if (achXP > 0) {
+                var achXPLog = new GlideRecord('x_2063628_flowmi_0_fm_xp_log');
+                achXPLog.initialize();
+                achXPLog.setValue('user_profile', userProfileSysId);
+                achXPLog.setValue('xp_amount', achXP);
+                achXPLog.setValue('source_type', 'achievement');
+                achXPLog.setValue('source_achievement', achievementSysId);
+                achXPLog.setValue('description', 'Achievement earned: ' + achievementGr.getValue('name'));
+                achXPLog.setValue('awarded_date', new GlideDateTime().toString());
+                achXPLog.insert();
+
+                profile.get(userProfileSysId);
+                var achCurrentXP = parseInt(profile.getValue('total_xp')) || 0;
+                profile.setValue('total_xp', achCurrentXP + achXP);
+                profile.update();
+            }
+        }
+    }
+
+    gs.info('FlowMind: Awarded ' + totalXPAwarded + ' XP to user profile ' + userProfileSysId + ' for task completion');
+})(current, previous);
+]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:02</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>af62f0c127454f45ac918f35a77082ec</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Award XP on Task Completion</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>sys_script_af62f0c127454f45ac918f35a77082ec</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:02</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=af62f0c127454f45ac918f35a77082ec"/>
+</record_update>

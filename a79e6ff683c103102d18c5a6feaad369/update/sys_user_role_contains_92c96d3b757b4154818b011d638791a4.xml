@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role_contains">
+    <sys_user_role_contains action="INSERT_OR_UPDATE">
+        <contains display_value="x_2063628_flowmi_0.manager" name="x_2063628_flowmi_0.manager">37d63e263de24f7d98a3a61b68105437</contains>
+        <role display_value="x_2063628_flowmi_0.admin" name="x_2063628_flowmi_0.admin">b79e6ff683c103102d18c5a6feaad37d</role>
+        <sys_class_name>sys_user_role_contains</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:05</sys_created_on>
+        <sys_id>92c96d3b757b4154818b011d638791a4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_2063628_flowmi_0.manager.x_2063628_flowmi_0.admin</sys_name>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>sys_user_role_contains_92c96d3b757b4154818b011d638791a4</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:05</sys_updated_on>
+    </sys_user_role_contains>
+</record_update>

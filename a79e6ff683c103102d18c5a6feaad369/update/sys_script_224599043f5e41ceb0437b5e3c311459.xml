@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_script">
+    <sys_script action="INSERT_OR_UPDATE">
+        <abort_action>false</abort_action>
+        <access>package_private</access>
+        <action_delete>false</action_delete>
+        <action_insert>false</action_insert>
+        <action_query>false</action_query>
+        <action_update>true</action_update>
+        <active>true</active>
+        <add_message>false</add_message>
+        <advanced>true</advanced>
+        <change_fields>false</change_fields>
+        <client_callable>false</client_callable>
+        <collection>x_2063628_flowmi_0_fm_user_profile</collection>
+        <condition>current.getValue('total_xp') != previous.getValue('total_xp')</condition>
+        <description/>
+        <execute_function>false</execute_function>
+        <filter_condition/>
+        <is_rest>false</is_rest>
+        <message/>
+        <name>Update Team XP on Profile XP Change</name>
+        <order>200</order>
+        <priority>100</priority>
+        <rest_method/>
+        <rest_method_text/>
+        <rest_service/>
+        <rest_service_text/>
+        <rest_variables/>
+        <role_conditions/>
+        <script><![CDATA[// Business Rule: Update Team XP on Profile XP Change
+// Globals available: current, previous, gs, GlideRecord, GlideDateTime
+(function executeRule(current, previous) {
+    var userProfileSysId = current.getUniqueValue();
+
+    // Find all teams this user belongs to
+    var teamMemberGr = new GlideRecord('x_2063628_flowmi_0_fm_team_member');
+    teamMemberGr.addQuery('user_profile', userProfileSysId);
+    teamMemberGr.query();
+
+    while (teamMemberGr.next()) {
+        var teamSysId = teamMemberGr.getValue('team');
+
+        // Recalculate team total_xp as sum of all member profiles
+        var totalTeamXP = 0;
+        var memberCount = 0;
+        var membersGr = new GlideRecord('x_2063628_flowmi_0_fm_team_member');
+        membersGr.addQuery('team', teamSysId);
+        membersGr.query();
+
+        while (membersGr.next()) {
+            memberCount++;
+            var memberProfileSysId = membersGr.getValue('user_profile');
+            var memberProfile = new GlideRecord('x_2063628_flowmi_0_fm_user_profile');
+            if (memberProfile.get(memberProfileSysId)) {
+                totalTeamXP += parseInt(memberProfile.getValue('total_xp')) || 0;
+            }
+        }
+
+        // Update team total_xp and member_count
+        var team = new GlideRecord('x_2063628_flowmi_0_fm_team');
+        if (team.get(teamSysId)) {
+            team.setValue('total_xp', totalTeamXP);
+            team.setValue('member_count', memberCount);
+            team.update();
+        }
+    }
+
+    gs.info('FlowMind: Updated team XP for user profile ' + userProfileSysId);
+})(current, previous);
+]]></script>
+        <sys_class_name>sys_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2026-05-28 13:38:02</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>224599043f5e41ceb0437b5e3c311459</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Update Team XP on Profile XP Change</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="FlowMind AI" source="x_2063628_flowmi_0">a79e6ff683c103102d18c5a6feaad369</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="FlowMind AI">a79e6ff683c103102d18c5a6feaad369</sys_scope>
+        <sys_update_name>sys_script_224599043f5e41ceb0437b5e3c311459</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2026-05-28 13:38:02</sys_updated_on>
+        <template/>
+        <when>after</when>
+    </sys_script>
+    <sys_translated_text action="delete_multiple" query="documentkey=224599043f5e41ceb0437b5e3c311459"/>
+</record_update>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="d6f193844615449b867808b0b5fad759" label="FM Team Member" name="x_2063628_flowmi_0_fm_team_member" type="collection">
+        <element choice="3" default="member" label="Role" max_length="40" name="role" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Member" sequence="0" value="member"/>
+                <element inactive_on_update="false" label="Lead" sequence="1" value="lead"/>
+                <element inactive_on_update="false" label="Admin" sequence="2" value="admin"/>
+            </choice>
+        </element>
+        <element label="Team" mandatory="true" max_length="32" name="team" reference="x_2063628_flowmi_0_fm_team" type="reference"/>
+        <element display="true" label="User Profile" mandatory="true" max_length="32" name="user_profile" reference="x_2063628_flowmi_0_fm_user_profile" type="reference"/>
+        <element label="Joined Date" max_length="40" name="joined_date" type="glide_date_time"/>
+        <index name="index">
+            <element name="team"/>
+        </index>
+        <index name="index2">
+            <element name="user_profile"/>
+        </index>
+    </element>
+</database>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element attributes="enforce_dot_walk_cross_scope_access=true" db_object_id="6e81e94c5f274056aa078ac2d69f9320" label="FM AI Insight" name="x_2063628_flowmi_0_fm_ai_insight" type="collection">
+        <element label="Generated Date" max_length="40" name="generated_date" type="glide_date_time"/>
+        <element choice="3" default="medium" label="Priority" max_length="40" name="priority" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="High" sequence="0" value="high"/>
+                <element inactive_on_update="false" label="Low" sequence="2" value="low"/>
+                <element inactive_on_update="false" label="Medium" sequence="1" value="medium"/>
+            </choice>
+        </element>
+        <element display="true" label="Title" mandatory="true" max_length="200" name="title" type="string"/>
+        <element choice="3" default="productivity_tip" label="Insight Type" max_length="40" name="insight_type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Workflow Optimization" sequence="3" value="workflow_optimization"/>
+                <element inactive_on_update="false" label="Productivity Tip" sequence="0" value="productivity_tip"/>
+                <element inactive_on_update="false" label="Task Suggestion" sequence="2" value="task_suggestion"/>
+                <element inactive_on_update="false" label="Burnout Warning" sequence="1" value="burnout_warning"/>
+            </choice>
+        </element>
+        <element label="User Profile" mandatory="true" max_length="32" name="user_profile" reference="x_2063628_flowmi_0_fm_user_profile" type="reference"/>
+        <element default="true" label="Is Active" max_length="40" name="is_active" type="boolean"/>
+        <element choice="3" default="new" label="Status" max_length="40" name="status" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Dismissed" sequence="3" value="dismissed"/>
+                <element inactive_on_update="false" label="New" sequence="0" value="new"/>
+                <element inactive_on_update="false" label="Viewed" sequence="1" value="viewed"/>
+                <element inactive_on_update="false" label="Acted On" sequence="2" value="acted_on"/>
+            </choice>
+        </element>
+        <element label="Content" max_length="2000" name="content" type="string"/>
+        <index name="index">
+            <element name="user_profile"/>
+        </index>
+    </element>
+</database>
